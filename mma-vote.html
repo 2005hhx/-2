@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>超糖对决·内部投票</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --void: #070709;
+      --ink: #0e0f12;
+      --steel: #1a1d24;
+      --blood: #c41e3a;
+      --blood-glow: #ff2d4a;
+      --gold: #e8c547;
+      --ice: #8ae8ff;
+      --text: #f2f2f4;
+      --muted: #9aa0ab;
+      --oct-border: rgba(232, 197, 71, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      color: var(--text);
+      background: var(--void);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(196, 30, 58, 0.25), transparent),
+        radial-gradient(ellipse 60% 40% at 100% 100%, rgba(138, 232, 255, 0.08), transparent),
+        repeating-linear-gradient(
+          -45deg,
+          transparent,
+          transparent 2px,
+          rgba(255, 255, 255, 0.02) 2px,
+          rgba(255, 255, 255, 0.02) 4px
+        );
+      padding: 24px 16px 48px;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .oct-wrap {
+      position: relative;
+      padding: 3px;
+      background: linear-gradient(145deg, var(--oct-border), transparent 40%, var(--oct-border));
+      clip-path: polygon(
+        6% 0%, 94% 0%, 100% 12%, 100% 88%, 94% 100%, 6% 100%, 0% 88%, 0% 12%
+      );
+    }
+
+    .oct-inner {
+      background: linear-gradient(180deg, var(--ink) 0%, var(--steel) 100%);
+      clip-path: polygon(
+        6% 0%, 94% 0%, 100% 12%, 100% 88%, 94% 100%, 6% 100%, 0% 88%, 0% 12%
+      );
+      padding: 28px 20px 32px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    h1 {
+      text-align: center;
+      font-weight: 900;
+      font-size: clamp(1.1rem, 3vw, 1.45rem);
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .arena {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: clamp(8px, 2vw, 20px);
+      align-items: stretch;
+      min-height: 320px;
+    }
+
+    @media (max-width: 720px) {
+      .arena {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+      }
+      .vs-col {
+        order: 2;
+        min-height: 100px;
+      }
+      .team-left {
+        order: 1;
+      }
+      .team-right {
+        order: 3;
+      }
+    }
+
+    .team {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .team-name {
+      text-align: center;
+      font-weight: 900;
+      font-size: clamp(1.15rem, 3vw, 1.5rem);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      padding: 10px;
+      border: 2px solid;
+      clip-path: polygon(4% 0, 100% 0, 96% 100%, 0 100%);
+    }
+
+    .team-left .team-name {
+      color: var(--blood-glow);
+      border-color: var(--blood);
+      text-shadow: 0 0 24px rgba(255, 45, 74, 0.45);
+      background: linear-gradient(90deg, rgba(196, 30, 58, 0.2), transparent);
+    }
+
+    .team-right .team-name {
+      color: var(--ice);
+      border-color: rgba(138, 232, 255, 0.5);
+      text-shadow: 0 0 20px rgba(138, 232, 255, 0.35);
+      background: linear-gradient(270deg, rgba(138, 232, 255, 0.12), transparent);
+    }
+
+    .fighter-card {
+      flex: 1;
+      min-height: 140px;
+      position: relative;
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      background: var(--steel);
+      overflow: hidden;
+      clip-path: polygon(0 8%, 100% 0, 100% 92%, 0 100%);
+    }
+
+    .fighter-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      min-height: 160px;
+      filter: contrast(1.05) saturate(1.05);
+    }
+
+    .fighter-card .img-fallback {
+      min-height: 160px;
+      background: repeating-linear-gradient(
+        45deg,
+        #222 0,
+        #222 10px,
+        #2a2a2e 10px,
+        #2a2a2e 20px
+      );
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.1rem;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    .fighter-label {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 8px 12px;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+    }
+
+    .vs-col {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .vs {
+      font-family: "Bebas Neue", Impact, sans-serif;
+      font-size: clamp(4rem, 14vw, 7.5rem);
+      line-height: 0.85;
+      background: linear-gradient(180deg, #fff 20%, var(--blood-glow) 55%, #8b0000 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 20px rgba(196, 30, 58, 0.8));
+      letter-spacing: 0.02em;
+      user-select: none;
+    }
+
+    .vs-ring {
+      width: min(90%, 120px);
+      height: 4px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      opacity: 0.8;
+    }
+
+    .vote-section {
+      margin-top: 36px;
+      padding-top: 28px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .vote-section h2 {
+      font-size: 1.05rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .step-hint {
+      text-align: center;
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.55;
+    }
+
+    .identity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .id-btn {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(26, 29, 36, 0.9);
+      color: var(--text);
+      padding: 12px 10px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+    }
+
+    .id-btn:hover:not(:disabled) {
+      border-color: var(--gold);
+      box-shadow: 0 0 16px rgba(232, 197, 71, 0.25);
+    }
+
+    .id-btn:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .id-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+
+    .id-btn.locked-me {
+      border-color: var(--gold);
+      box-shadow: inset 0 0 20px rgba(232, 197, 71, 0.2);
+      color: var(--gold);
+    }
+
+    .vote-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .vote-btn {
+      appearance: none;
+      flex: 1 1 220px;
+      max-width: 320px;
+      padding: 18px 24px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      cursor: pointer;
+      border: 2px solid;
+      text-transform: uppercase;
+      transition: transform 0.12s, box-shadow 0.15s;
+    }
+
+    .vote-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+
+    .vote-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .vote-team-a {
+      color: var(--blood-glow);
+      border-color: var(--blood);
+      background: rgba(196, 30, 58, 0.15);
+      box-shadow: 0 0 24px rgba(196, 30, 58, 0.2);
+    }
+
+    .vote-team-b {
+      color: var(--ice);
+      border-color: rgba(138, 232, 255, 0.6);
+      background: rgba(138, 232, 255, 0.08);
+      box-shadow: 0 0 24px rgba(138, 232, 255, 0.15);
+    }
+
+    .status-bar {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 14px 18px;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .status-bar strong {
+      color: var(--text);
+    }
+
+    .results {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .results {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .result-card {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 14px;
+      background: rgba(14, 15, 18, 0.6);
+    }
+
+    .result-card h3 {
+      font-size: 0.85rem;
+      margin-bottom: 10px;
+      color: var(--gold);
+      letter-spacing: 0.12em;
+    }
+
+    .result-card ul {
+      list-style: none;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .result-card li {
+      padding: 4px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+    }
+
+    .result-card li:last-child {
+      border-bottom: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="oct-wrap">
+      <div class="oct-inner">
+        <h1>Fight Night Vote</h1>
+        <p class="subtitle">港南智力死斗哪边赢 · 实名投票</p>
+
+        <div class="arena">
+          <div class="team team-left">
+            <div class="team-name">dian憨队</div>
+            <div class="fighter-card">
+              <img src="vote-images/diandian.jfif" alt="dinadian" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+              <div class="img-fallback hidden">放入图片 vote-images/dinadian.jpeg</div>
+              <div class="fighter-label">dinadian</div>
+            </div>
+            <div class="fighter-card">
+              <img src="vote-images/hanhan.jfif" alt="憨憨" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+              <div class="img-fallback hidden">放入图片 vote-images/hanhan.jpeg</div>
+              <div class="fighter-label">憨憨</div>
+            </div>
+          </div>
+
+          <div class="vs-col">
+            <div class="vs-ring"></div>
+            <div class="vs" aria-hidden="true">VS</div>
+            <div class="vs-ring"></div>
+          </div>
+
+          <div class="team team-right">
+            <div class="team-name">羊狗队</div>
+            <div class="fighter-card">
+              <img src="vote-images/cyy.jfif" alt="澄友羊" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+              <div class="img-fallback hidden">放入图片 vote-images/cyy.jfif</div>
+              <div class="fighter-label">澄友羊</div>
+            </div>
+            <div class="fighter-card">
+              <img src="vote-images/AQ.jfif" alt="胃阿奇" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+              <div class="img-fallback hidden">放入图片 vote-images/AQ.jpeg</div>
+              <div class="fighter-label">胃阿奇</div>
+            </div>
+          </div>
+        </div>
+
+        <section class="vote-section">
+          <h2>投票区</h2>
+          <p class="step-hint">
+            请先选择你的身份；确认后不可更改。随后仅能投一票给其中一队，投票同样不可撤销。<br />
+            已有身份投过票的选项会置灰；每名参与者、每次投票选项在记录中只对应一条结果。
+          </p>
+
+          <div id="identityBlock">
+            <p class="step-hint" style="margin-bottom: 12px; color: var(--gold)">① 选择身份</p>
+            <div class="identity-grid" id="identityGrid" role="group" aria-label="选择投票身份"></div>
+          </div>
+
+          <div id="voteBlock" class="hidden">
+            <p class="step-hint" style="margin-bottom: 12px; color: var(--gold)">② 选择支持的队伍</p>
+            <div class="vote-options">
+              <button type="button" class="vote-btn vote-team-a" id="btnTeamA" data-team="dian">投给 dian憨队</button>
+              <button type="button" class="vote-btn vote-team-b" id="btnTeamB" data-team="yang">投给 羊狗队</button>
+            </div>
+          </div>
+
+          <div class="status-bar" id="statusBar">
+            当前未锁定身份。请选择上方名单中的<strong>你本人</strong>对应的一项。
+          </div>
+
+          <div class="results">
+            <div class="result-card">
+              <h3>dian憨队</h3>
+              <ul id="listDian"></ul>
+            </div>
+            <div class="result-card">
+              <h3>羊狗队</h3>
+              <ul id="listYang"></ul>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var STORAGE_KEY = "mmaTeamVote_v1";
+      var IDENTITY_CONFIRM = "你确定你是这个人吗？选择不可撤销。";
+      var VOTE_CONFIRM_TEAM = {
+        dian: "确定将票投给【dian憨队】？选择不可撤销。",
+        yang: "确定将票投给【羊狗队】？选择不可撤销。"
+      };
+
+      var IDENTITIES = [
+        { id: "1", label: "乐鑫" },
+        { id: "2", label: "憨憨" },
+        { id: "3", label: "diandian" },
+        { id: "4", label: "头鸡" },
+        { id: "5", label: "陈霖焓" },
+        { id: "6", label: "陈陈昏" },
+        { id: "7", label: "胃阿奇" },
+        { id: "8", label: "狗狗" },
+        { id: "9", label: "依晨" },
+        { id: "10", label: "阿俊" },
+        { id: "11", label: "政伟" },
+        { id: "12", label: "老虎" },
+        { id: "13", label: "可俊" },
+        { id: "14", label: "糖宝" },
+        { id: "15", label: "xyn" }
+      ];
+
+      function loadState() {
+        try {
+          var raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return { votes: {} };
+          var o = JSON.parse(raw);
+          if (!o || typeof o !== "object" || !o.votes) return { votes: {} };
+          return { votes: o.votes };
+        } catch (e) {
+          return { votes: {} };
+        }
+      }
+
+      function saveState(state) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({ votes: state.votes, updatedAt: Date.now() }));
+      }
+
+      var state = loadState();
+      var sessionLockedId = null;
+      var sessionCompleted = false;
+
+      var grid = document.getElementById("identityGrid");
+      var voteBlock = document.getElementById("voteBlock");
+      var statusBar = document.getElementById("statusBar");
+      var listDian = document.getElementById("listDian");
+      var listYang = document.getElementById("listYang");
+      var btnTeamA = document.getElementById("btnTeamA");
+      var btnTeamB = document.getElementById("btnTeamB");
+
+      function nameById(pid) {
+        for (var i = 0; i < IDENTITIES.length; i++) {
+          if (IDENTITIES[i].id === pid) return IDENTITIES[i].label;
+        }
+        return pid;
+      }
+
+      function renderLists() {
+        listDian.innerHTML = "";
+        listYang.innerHTML = "";
+        var dian = [];
+        var yang = [];
+        Object.keys(state.votes).forEach(function (pid) {
+          var v = state.votes[pid];
+          var line = nameById(pid);
+          if (v.team === "dian") dian.push(line);
+          else if (v.team === "yang") yang.push(line);
+        });
+        dian.sort();
+        yang.sort();
+        dian.forEach(function (n) {
+          var li = document.createElement("li");
+          li.textContent = n;
+          listDian.appendChild(li);
+        });
+        yang.forEach(function (n) {
+          var li = document.createElement("li");
+          li.textContent = n;
+          listYang.appendChild(li);
+        });
+        if (!dian.length) {
+          var e = document.createElement("li");
+          e.textContent = "（暂无）";
+          listDian.appendChild(e);
+        }
+        if (!yang.length) {
+          var e2 = document.createElement("li");
+          e2.textContent = "（暂无）";
+          listYang.appendChild(e2);
+        }
+      }
+
+      function updateIdentityButtons() {
+        var buttons = grid.querySelectorAll(".id-btn");
+        buttons.forEach(function (btn) {
+          var pid = btn.getAttribute("data-id");
+          var used = !!state.votes[pid];
+          var isMe = sessionLockedId === pid;
+          if (used) {
+            btn.disabled = true;
+            btn.classList.toggle("locked-me", isMe);
+          } else if (sessionLockedId && !sessionCompleted && !isMe) {
+            btn.disabled = true;
+            btn.classList.remove("locked-me");
+          } else {
+            btn.disabled = false;
+            btn.classList.toggle("locked-me", isMe && sessionLockedId && !sessionCompleted);
+          }
+        });
+      }
+
+      function refreshUI() {
+        renderLists();
+        updateIdentityButtons();
+
+        if (sessionCompleted) {
+          voteBlock.classList.add("hidden");
+          statusBar.innerHTML =
+            "你已以<strong>" +
+            nameById(sessionLockedId) +
+            "</strong>的身份完成投票，结果已记录，谢谢参与。";
+          btnTeamA.disabled = true;
+          btnTeamB.disabled = true;
+          return;
+        }
+
+        if (sessionLockedId && !state.votes[sessionLockedId]) {
+          voteBlock.classList.remove("hidden");
+          statusBar.innerHTML =
+            "身份已锁定为<strong>" +
+            nameById(sessionLockedId) +
+            "</strong>，请选择支持的超糖队伍（不可撤销）。";
+          btnTeamA.disabled = false;
+          btnTeamB.disabled = false;
+        } else if (sessionLockedId && state.votes[sessionLockedId]) {
+          sessionCompleted = true;
+          refreshUI();
+        } else {
+          voteBlock.classList.add("hidden");
+          statusBar.innerHTML =
+            "当前未锁定身份。已有 " +
+            Object.keys(state.votes).length +
+            " 人参与。请选择名单中的<strong>你本人</strong>。";
+        }
+      }
+
+      IDENTITIES.forEach(function (person) {
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "id-btn";
+        btn.setAttribute("data-id", person.id);
+        btn.textContent = person.id + " · " + person.label;
+        btn.addEventListener("click", function () {
+          if (sessionLockedId || sessionCompleted) return;
+          if (state.votes[person.id]) {
+            alert("该身份已完成投票，不能重复使用。");
+            return;
+          }
+          if (!window.confirm(IDENTITY_CONFIRM)) return;
+          sessionLockedId = person.id;
+          refreshUI();
+        });
+        grid.appendChild(btn);
+      });
+
+      function submitVote(team) {
+        if (!sessionLockedId || sessionCompleted) return;
+        if (state.votes[sessionLockedId]) {
+          alert("该身份已投过票。");
+          return;
+        }
+        var msg = VOTE_CONFIRM_TEAM[team];
+        if (!msg || !window.confirm(msg)) return;
+        state.votes[sessionLockedId] = { team: team, at: Date.now() };
+        saveState(state);
+        sessionCompleted = true;
+        refreshUI();
+      }
+
+      btnTeamA.addEventListener("click", function () {
+        submitVote("dian");
+      });
+      btnTeamB.addEventListener("click", function () {
+        submitVote("yang");
+      });
+
+      refreshUI();
+    })();
+  </script>
+</body>
+</html>
