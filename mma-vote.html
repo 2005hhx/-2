@@ -151,6 +151,56 @@
       clip-path: polygon(0 8%, 100% 0, 100% 92%, 0 100%);
     }
 
+    .fighter-card {
+      transform: translateZ(0) scale(1);
+      transition: transform 140ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    }
+
+    .fighter-card:hover {
+      border-color: rgba(255, 255, 255, 0.18);
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .fighter-card.pop {
+      transform: translateZ(0) scale(1.03);
+    }
+
+    .fighter-card::before {
+      content: "";
+      position: absolute;
+      top: -30%;
+      left: -120%;
+      width: 55%;
+      height: 180%;
+      pointer-events: none;
+      background: linear-gradient(
+        115deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.08) 30%,
+        rgba(255, 255, 255, 0.45) 48%,
+        rgba(255, 255, 255, 0.1) 65%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      transform: skewX(-20deg);
+      mix-blend-mode: screen;
+      animation: shineFlow 4.2s linear infinite;
+      z-index: 2;
+    }
+
+    .fighter-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.14), transparent 45%);
+      z-index: 1;
+    }
+
+    .fighter-card:active::before,
+    .fighter-card.flash::before {
+      animation: shineBurst 620ms ease-out 1;
+    }
+
     .fighter-card img {
       width: 100%;
       height: 100%;
@@ -158,6 +208,8 @@
       display: block;
       min-height: 160px;
       filter: contrast(1.05) saturate(1.05);
+      position: relative;
+      z-index: 0;
     }
 
     .fighter-card .img-fallback {
@@ -188,6 +240,41 @@
       font-weight: 700;
       font-size: 0.95rem;
       letter-spacing: 0.06em;
+      z-index: 3;
+    }
+
+    @keyframes shineFlow {
+      0% {
+        left: -120%;
+        opacity: 0;
+      }
+      8% {
+        opacity: 0.95;
+      }
+      45% {
+        opacity: 0.75;
+      }
+      70% {
+        opacity: 0.25;
+      }
+      100% {
+        left: 140%;
+        opacity: 0;
+      }
+    }
+
+    @keyframes shineBurst {
+      0% {
+        left: -45%;
+        opacity: 0.15;
+      }
+      22% {
+        opacity: 1;
+      }
+      100% {
+        left: 120%;
+        opacity: 0;
+      }
     }
 
     .vs-col {
@@ -283,6 +370,16 @@
       color: var(--gold);
     }
 
+    .id-btn .crown {
+      margin-left: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.02em;
+      line-height: 1;
+      filter: drop-shadow(0 0 10px rgba(232, 197, 71, 0.45));
+    }
+
     .vote-options {
       display: flex;
       flex-wrap: wrap;
@@ -342,6 +439,116 @@
       color: var(--text);
     }
 
+    .pk-wrap {
+      margin: 18px 0 18px;
+      padding: 14px 14px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.28);
+    }
+
+    .pk-top {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+
+    .pk-top .left {
+      color: var(--blood-glow);
+      text-shadow: 0 0 16px rgba(255, 45, 74, 0.25);
+    }
+
+    .pk-top .right {
+      color: var(--ice);
+      text-shadow: 0 0 16px rgba(138, 232, 255, 0.18);
+      text-align: right;
+    }
+
+    .pk-mid {
+      font-family: "Bebas Neue", Impact, sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      opacity: 0.9;
+      user-select: none;
+    }
+
+    .pk-bar {
+      position: relative;
+      height: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(26, 29, 36, 0.85);
+      overflow: hidden;
+    }
+
+    .pk-fill {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      grid-template-columns: var(--leftPct, 50%) 1fr;
+      transition: grid-template-columns 420ms ease;
+    }
+
+    .pk-fill .leftFill {
+      background: linear-gradient(90deg, rgba(196, 30, 58, 0.25), rgba(255, 45, 74, 0.55));
+      box-shadow: inset 0 0 18px rgba(255, 45, 74, 0.25);
+    }
+
+    .pk-fill .rightFill {
+      background: linear-gradient(270deg, rgba(138, 232, 255, 0.18), rgba(138, 232, 255, 0.5));
+      box-shadow: inset 0 0 18px rgba(138, 232, 255, 0.18);
+    }
+
+    .pk-bar::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 0.03) 0,
+        rgba(255, 255, 255, 0.03) 6px,
+        rgba(255, 255, 255, 0.0) 6px,
+        rgba(255, 255, 255, 0.0) 12px
+      );
+      pointer-events: none;
+      mix-blend-mode: overlay;
+      opacity: 0.8;
+    }
+
+    .pk-marker {
+      position: absolute;
+      top: -6px;
+      left: calc(var(--leftPct, 50%));
+      width: 2px;
+      height: 30px;
+      background: rgba(232, 197, 71, 0.9);
+      box-shadow: 0 0 14px rgba(232, 197, 71, 0.45);
+      transform: translateX(-1px);
+      transition: left 420ms ease;
+    }
+
+    .pk-bottom {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .pk-bottom .b-left {
+      text-align: left;
+    }
+
+    .pk-bottom .b-right {
+      text-align: right;
+    }
+
     .results {
       margin-top: 20px;
       display: grid;
@@ -388,7 +595,7 @@
     }
   </style>
 </head>
-<body>
+<body class="locked">
   <div class="page">
     <div class="oct-wrap">
       <div class="oct-inner">
@@ -399,13 +606,13 @@
           <div class="team team-left">
             <div class="team-name">dian憨队</div>
             <div class="fighter-card">
-              <img src="vote-images/diandian.jfif" alt="dinadian" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
-              <div class="img-fallback hidden">放入图片 vote-images/dinadian.jpeg</div>
+              <img src="diandian.jfif" alt="dinadian" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+              <div class="img-fallback hidden">放入图片 dinadian.jpeg</div>
               <div class="fighter-label">dinadian</div>
             </div>
             <div class="fighter-card">
-              <img src="vote-images/hanhan.jfif" alt="憨憨" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
-              <div class="img-fallback hidden">放入图片 vote-images/hanhan.jpeg</div>
+              <img src="hanhan.jfif" alt="憨憨" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+              <div class="img-fallback hidden">放入图片 hanhan.jpeg</div>
               <div class="fighter-label">憨憨</div>
             </div>
           </div>
@@ -419,13 +626,13 @@
           <div class="team team-right">
             <div class="team-name">羊狗队</div>
             <div class="fighter-card">
-              <img src="vote-images/cyy.jfif" alt="澄友羊" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
-              <div class="img-fallback hidden">放入图片 vote-images/cyy.jfif</div>
+              <img src="cyy.jfif" alt="澄友羊" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+              <div class="img-fallback hidden">放入图片 cyy.jfif</div>
               <div class="fighter-label">澄友羊</div>
             </div>
             <div class="fighter-card">
-              <img src="vote-images/AQ.jfif" alt="胃阿奇" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
-              <div class="img-fallback hidden">放入图片 vote-images/AQ.jpeg</div>
+              <img src="AQ.jfif" alt="胃阿奇" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
+              <div class="img-fallback hidden">放入图片 AQ.jpeg</div>
               <div class="fighter-label">胃阿奇</div>
             </div>
           </div>
@@ -453,6 +660,25 @@
 
           <div class="status-bar" id="statusBar">
             当前未锁定身份。请选择上方名单中的<strong>你本人</strong>对应的一项。
+          </div>
+
+          <div class="pk-wrap" id="pkWrap" aria-label="PK进度">
+            <div class="pk-top">
+              <div class="left" id="pkLeftTitle">dian憨队</div>
+              <div class="pk-mid">PK</div>
+              <div class="right" id="pkRightTitle">羊狗队</div>
+            </div>
+            <div class="pk-bar" id="pkBar">
+              <div class="pk-fill" id="pkFill">
+                <div class="leftFill"></div>
+                <div class="rightFill"></div>
+              </div>
+              <div class="pk-marker" id="pkMarker" aria-hidden="true"></div>
+            </div>
+            <div class="pk-bottom">
+              <div class="b-left"><strong id="pkLeftPct">0%</strong>（<span id="pkLeftCount">0</span>票）</div>
+              <div class="b-right"><strong id="pkRightPct">0%</strong>（<span id="pkRightCount">0</span>票）</div>
+            </div>
           </div>
 
           <div class="results">
@@ -494,7 +720,11 @@
         { id: "12", label: "老虎" },
         { id: "13", label: "可俊" },
         { id: "14", label: "糖宝" },
-        { id: "15", label: "xyn" }
+        { id: "15", label: "xyn" },
+        { id: "16", label: "澄友羊" },
+        { id: "17", label: "黑地猪" },
+        { id: "18", label: "额外人员" },
+        { id: "19", label: "我的网页未完善 请勿多选其他人物" }
       ];
 
       function loadState() {
@@ -524,6 +754,12 @@
       var listYang = document.getElementById("listYang");
       var btnTeamA = document.getElementById("btnTeamA");
       var btnTeamB = document.getElementById("btnTeamB");
+      var pkFill = document.getElementById("pkFill");
+      var pkMarker = document.getElementById("pkMarker");
+      var pkLeftPct = document.getElementById("pkLeftPct");
+      var pkRightPct = document.getElementById("pkRightPct");
+      var pkLeftCount = document.getElementById("pkLeftCount");
+      var pkRightCount = document.getElementById("pkRightCount");
 
       function nameById(pid) {
         for (var i = 0; i < IDENTITIES.length; i++) {
@@ -567,6 +803,34 @@
         }
       }
 
+      function computeCounts() {
+        var dianCount = 0;
+        var yangCount = 0;
+        Object.keys(state.votes).forEach(function (pid) {
+          var v = state.votes[pid];
+          if (!v || !v.team) return;
+          if (v.team === "dian") dianCount++;
+          else if (v.team === "yang") yangCount++;
+        });
+        return { dian: dianCount, yang: yangCount, total: dianCount + yangCount };
+      }
+
+      function renderPk() {
+        var c = computeCounts();
+        var leftPct = c.total ? Math.round((c.dian * 100) / c.total) : 0;
+        var rightPct = c.total ? 100 - leftPct : 0;
+
+        pkLeftCount.textContent = String(c.dian);
+        pkRightCount.textContent = String(c.yang);
+        pkLeftPct.textContent = leftPct + "%";
+        pkRightPct.textContent = rightPct + "%";
+
+        var leftPctCss = leftPct + "%";
+        pkFill.style.setProperty("--leftPct", leftPctCss);
+        pkMarker.style.setProperty("--leftPct", leftPctCss);
+        pkMarker.style.left = "calc(" + leftPctCss + ")";
+      }
+
       function updateIdentityButtons() {
         var buttons = grid.querySelectorAll(".id-btn");
         buttons.forEach(function (btn) {
@@ -588,6 +852,7 @@
 
       function refreshUI() {
         renderLists();
+        renderPk();
         updateIdentityButtons();
 
         if (sessionCompleted) {
@@ -626,7 +891,12 @@
         btn.type = "button";
         btn.className = "id-btn";
         btn.setAttribute("data-id", person.id);
-        btn.textContent = person.id + " · " + person.label;
+        if (person.label === "头鸡") {
+          btn.innerHTML = person.id + " · " + person.label + "<span class=\"crown\" aria-hidden=\"true\">👑</span>";
+          btn.setAttribute("aria-label", person.id + " · " + person.label + " 皇冠");
+        } else {
+          btn.textContent = person.id + " · " + person.label;
+        }
         btn.addEventListener("click", function () {
           if (sessionLockedId || sessionCompleted) return;
           if (state.votes[person.id]) {
@@ -659,6 +929,22 @@
       });
       btnTeamB.addEventListener("click", function () {
         submitVote("yang");
+      });
+
+      var fighterCards = document.querySelectorAll(".fighter-card");
+      fighterCards.forEach(function (card) {
+        card.addEventListener("click", function () {
+          card.classList.remove("flash");
+          card.classList.remove("pop");
+          // Force reflow so rapid repeated clicks can retrigger animation.
+          void card.offsetWidth;
+          card.classList.add("flash");
+          card.classList.add("pop");
+          setTimeout(function () {
+            card.classList.remove("flash");
+            card.classList.remove("pop");
+          }, 650);
+        });
       });
 
       refreshUI();
